@@ -41,14 +41,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/angles_ready"
-            android:minWidth="170dp"/>
+            android:minWidth="170dp"
+            android:background="@drawable/basic_button"
+            android:textColor="#eeffffff"
+            android:layout_marginBottom="10dp"/>
 
         <Button
             android:id="@+id/try_again_capture_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/try_again"
-            android:minWidth="170dp"/>
+            android:minWidth="170dp"
+            android:textColor="#eeffffff"
+            android:background="@drawable/basic_button"/>
 
     </LinearLayout>
 

@@ -33,7 +33,9 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="color" value="ffffff" />
                             <entry key="outputName" value="ic_take_picture" />
+                            <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\kdram" />
                           </map>
                         </option>

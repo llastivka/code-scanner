@@ -36,6 +36,7 @@
         android:src="@drawable/ic_take_picture"
         android:layout_margin="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/basic_button"/>
 
 </RelativeLayout>

@@ -18,11 +18,6 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private byte[] imageBytes;
 
-    // Used to load the 'native-lib' library on application startup.
-//    static {
-//        System.loadLibrary("native-lib");
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        changeFragments(new CameraFragment());
+        changeFragments(new CameraFragment(), getString(R.string.camera));
     }
 
     @Override
@@ -45,16 +40,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.camera:
-                toolbar.setTitle(getString(R.string.camera));
-                changeFragments(new CameraFragment());
+                changeFragments(new CameraFragment(), getString(R.string.camera));
                 return true;
             case R.id.history:
-                toolbar.setTitle(getString(R.string.history));
-                changeFragments(new HistoryFragment());
+                changeFragments(new HistoryFragment(), getString(R.string.history));
                 return true;
             case R.id.settings:
-                toolbar.setTitle(getString(R.string.settings));
-                changeFragments(new SettingsFragment());
+                changeFragments(new SettingsFragment(), getString(R.string.settings));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -62,12 +54,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void changeFragments(Fragment fragment) {
+    public void changeFragments(Fragment fragment, String toolbarTitle) {
         logger.info("Switching to " + fragment.getClass().getName());
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+        toolbar.setTitle(toolbarTitle);
     }
 
     public byte[] getImageBytes() {

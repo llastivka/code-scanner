@@ -5,10 +5,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -18,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -49,9 +46,9 @@ public class CaptureFragment extends Fragment {
             if (imageBytes != null) {
                 logger.info("Decoding image bytes array into bitmap");
                 ImageView image = view.findViewById(R.id.camera_capture);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2;
-                Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, options);
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inSampleSize = 2;
+                Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                 Bitmap rotatedBitmap = rotate(decodedBitmap);
 //                Drawable d = Drawable.createFromStream(new ByteArrayInputStream(imageBytes), null);
 //                image.setImageDrawable(d);
@@ -74,7 +71,7 @@ public class CaptureFragment extends Fragment {
         tryAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) mFragmentActivity).changeFragments(new CameraFragment());
+                ((MainActivity) mFragmentActivity).changeFragments(new CameraFragment(), getString(R.string.camera));
             }
         });
 
@@ -90,6 +87,7 @@ public class CaptureFragment extends Fragment {
     }
 
     private void decode() {
+        ((MainActivity) mFragmentActivity).changeFragments(new ResultFragment(), getString(R.string.camera));
     }
 
     private Bitmap rotate(Bitmap decodedBitmap) {

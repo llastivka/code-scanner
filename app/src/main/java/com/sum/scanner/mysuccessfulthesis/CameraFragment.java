@@ -70,7 +70,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
                 ((MainActivity) mFragmentActivity).setImageBytes(bytes);
-                ((MainActivity) mFragmentActivity).changeFragments(new CaptureFragment());
+                ((MainActivity) mFragmentActivity).changeFragments(new CaptureFragment(), getString(R.string.camera));
             }
         };
 
