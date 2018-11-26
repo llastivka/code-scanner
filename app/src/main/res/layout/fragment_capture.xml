@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CaptureFragment"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/capture_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="150dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/camera_capture"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_take_picture"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/angles_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/angles_message"
+            android:layout_marginBottom="40dp"/>
+
+        <Button
+            android:id="@+id/angles_ready_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/angles_ready"
+            android:minWidth="170dp"/>
+
+        <Button
+            android:id="@+id/try_again_capture_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/try_again"
+            android:minWidth="170dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
