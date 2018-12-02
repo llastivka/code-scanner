@@ -53,9 +53,9 @@ public class CaptureFragment extends Fragment {
         if (imageBytes != null) {
             logger.info("Decoding image bytes array into bitmap");
             ImageView image = view.findViewById(R.id.camera_capture);
-            //I added 2 lines to manifest to avoid this error but still consider some scaling
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inSampleSize = 2;
+//            I added 2 lines to manifest to avoid this error but still consider some scaling later
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 2;
             Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
             Bitmap rotatedBitmap = rotate(decodedBitmap);
             image.setImageBitmap(rotatedBitmap);
@@ -69,9 +69,7 @@ public class CaptureFragment extends Fragment {
         ImageView angle3 = rootLayout.findViewById(R.id.angle3);
         ImageView angle4 = rootLayout.findViewById(R.id.angle4);
 
-//        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(150, 150);
-//        img.setLayoutParams(layoutParams);
-        //angle1.setOnTouchListener(new ChoiceTouchListener(0));
+        angle1.setOnTouchListener(new ChoiceTouchListener(0));
         angle2.setOnTouchListener(new ChoiceTouchListener(1));
         angle3.setOnTouchListener(new ChoiceTouchListener(2));
         angle4.setOnTouchListener(new ChoiceTouchListener(3));
@@ -148,9 +146,6 @@ public class CaptureFragment extends Fragment {
                             .getLayoutParams();
                     layoutParams.leftMargin = X - xDelta[angleId];
                     layoutParams.topMargin = Y - yDelta[angleId];
-//                    logger.info("2) angleId: " + angleId);
-//                    logger.info("xDelta: " + xDelta[angleId]);
-//                    logger.info("yDelta: " + yDelta[angleId]);
                     layoutParams.rightMargin = -250;
                     layoutParams.bottomMargin = -250;
                     view.setLayoutParams(layoutParams);
