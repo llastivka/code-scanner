@@ -1,4 +1,4 @@
-package com.sum.scanner.mysuccessfulthesis;
+package com.sum.scanner.mysuccessfulthesis.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,16 +18,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.sum.scanner.mysuccessfulthesis.MainActivity;
+import com.sum.scanner.mysuccessfulthesis.database.DatabaseHelper;
+import com.sum.scanner.mysuccessfulthesis.R;
+
 import java.util.logging.Logger;
 
 public class CaptureFragment extends Fragment {
 
     private static final Logger logger = Logger.getLogger(CaptureFragment.class.getName());
 
+    DatabaseHelper historyDB;
+
     private Context mContext;
     private Activity mFragmentActivity;
 
-    private ImageView angle1, angle2, angle3, angle4;
     private int xDelta[] = new int[4];
     private int yDelta[] = new int[4];
     private ViewGroup rootLayout;
@@ -59,14 +64,14 @@ public class CaptureFragment extends Fragment {
         }
 
         rootLayout = view.findViewById(R.id.angles_layout);
-        angle1 = rootLayout.findViewById(R.id.angle1);
-        angle2 = rootLayout.findViewById(R.id.angle2);
-        angle3 = rootLayout.findViewById(R.id.angle3);
-        angle4 = rootLayout.findViewById(R.id.angle4);
+        ImageView angle1 = rootLayout.findViewById(R.id.angle1);
+        ImageView angle2 = rootLayout.findViewById(R.id.angle2);
+        ImageView angle3 = rootLayout.findViewById(R.id.angle3);
+        ImageView angle4 = rootLayout.findViewById(R.id.angle4);
 
 //        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(150, 150);
 //        img.setLayoutParams(layoutParams);
-        angle1.setOnTouchListener(new ChoiceTouchListener(0));
+        //angle1.setOnTouchListener(new ChoiceTouchListener(0));
         angle2.setOnTouchListener(new ChoiceTouchListener(1));
         angle3.setOnTouchListener(new ChoiceTouchListener(2));
         angle4.setOnTouchListener(new ChoiceTouchListener(3));
@@ -75,7 +80,7 @@ public class CaptureFragment extends Fragment {
         tryAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) mFragmentActivity).changeFragments(new CameraFragment(), getString(R.string.camera));
+                ((MainActivity) mFragmentActivity).changeFragments(new CameraFragment(), getString(R.string.code_scanner));
             }
         });
 
@@ -91,7 +96,15 @@ public class CaptureFragment extends Fragment {
     }
 
     private void decode() {
-        ((MainActivity) mFragmentActivity).changeFragments(new ResultFragment(), getString(R.string.camera));
+        historyDB = new DatabaseHelper(mContext);
+        String tmpResult = "http://www.pja.edu.pl/en/news/student-pjatk-zwyciezca-w-hackathonie-hackyeah";
+        boolean inserted = historyDB.insertRecord(tmpResult);
+        if (inserted) {
+            logger.info("Decoded result is successfully inserted to the database");
+        } else {
+            logger.warning("Insertion to the database failed!");
+        }
+        ((MainActivity) mFragmentActivity).changeToResultFragments(tmpResult);
     }
 
     private Bitmap rotate(Bitmap decodedBitmap) {
@@ -114,6 +127,10 @@ public class CaptureFragment extends Fragment {
         public boolean onTouch(View view, MotionEvent event) {
             final int X = (int) event.getRawX();
             final int Y = (int) event.getRawY();
+            logger.info("0) angleId: " + angleId);
+            logger.info("0) viewId: " + view.getId());
+            logger.info("X: " + X);
+            logger.info("Y: " + Y);
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_DOWN:
                     RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
@@ -131,6 +148,9 @@ public class CaptureFragment extends Fragment {
                             .getLayoutParams();
                     layoutParams.leftMargin = X - xDelta[angleId];
                     layoutParams.topMargin = Y - yDelta[angleId];
+//                    logger.info("2) angleId: " + angleId);
+//                    logger.info("xDelta: " + xDelta[angleId]);
+//                    logger.info("yDelta: " + yDelta[angleId]);
                     layoutParams.rightMargin = -250;
                     layoutParams.bottomMargin = -250;
                     view.setLayoutParams(layoutParams);

@@ -1,8 +1,7 @@
-package com.sum.scanner.mysuccessfulthesis;
+package com.sum.scanner.mysuccessfulthesis.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -18,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.sum.scanner.mysuccessfulthesis.MainActivity;
+import com.sum.scanner.mysuccessfulthesis.R;
 
 import java.io.IOException;
 import java.util.List;
@@ -70,7 +72,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
                 ((MainActivity) mFragmentActivity).setImageBytes(bytes);
-                ((MainActivity) mFragmentActivity).changeFragments(new CaptureFragment(), getString(R.string.camera));
+                ((MainActivity) mFragmentActivity).changeFragments(new CaptureFragment(), getString(R.string.code_scanner));
             }
         };
 
