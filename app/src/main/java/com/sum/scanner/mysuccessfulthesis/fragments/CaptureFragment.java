@@ -47,7 +47,7 @@ public class CaptureFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_capture, container, false);
+        View view = inflater.inflate(R.layout.capture_fragment, container, false);
 
         byte[] imageBytes = ((MainActivity) getActivity()).getImageBytes();
         if (imageBytes != null) {
