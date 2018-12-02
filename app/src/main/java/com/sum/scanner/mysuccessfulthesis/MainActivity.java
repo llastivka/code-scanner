@@ -10,6 +10,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.sum.scanner.mysuccessfulthesis.fragments.CameraFragment;
+import com.sum.scanner.mysuccessfulthesis.fragments.HistoryFragment;
+import com.sum.scanner.mysuccessfulthesis.fragments.ResultFragment;
+import com.sum.scanner.mysuccessfulthesis.fragments.SettingsFragment;
+
 import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private static final Logger logger = Logger.getLogger(MainActivity.class.getName());
     private Toolbar toolbar;
     private byte[] imageBytes;
+    private String result = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        changeFragments(new CameraFragment(), getString(R.string.camera));
+        changeFragments(new CameraFragment(), getString(R.string.code_scanner));
     }
 
     @Override
@@ -40,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.camera:
-                changeFragments(new CameraFragment(), getString(R.string.camera));
+                changeFragments(new CameraFragment(), getString(R.string.code_scanner));
                 return true;
             case R.id.history:
                 changeFragments(new HistoryFragment(), getString(R.string.history));
@@ -63,11 +69,24 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(toolbarTitle);
     }
 
+    public void changeToResultFragments(String result) {
+        setResult(result);
+        changeFragments(new ResultFragment(), getString(R.string.code_scanner));
+    }
+
     public byte[] getImageBytes() {
         return imageBytes;
     }
 
     public void setImageBytes(byte[] imageBytes) {
         this.imageBytes = imageBytes;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
