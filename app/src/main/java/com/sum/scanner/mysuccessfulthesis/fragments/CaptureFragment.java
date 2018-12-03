@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -36,6 +37,13 @@ public class CaptureFragment extends Fragment {
     private int xDelta[] = new int[4];
     private int yDelta[] = new int[4];
     private ViewGroup rootLayout;
+    private ImageView angle1, angle2, angle3, angle4;
+    private int layoutWidth;
+    private int layoutHeight;
+    private int angleSideInDp = 40;
+    private int angleSide;
+    boolean gotLayoutMeasures = false;
+    private int minLeft, minTop, maxLeft, maxTop;
 
     @Override
     public void onAttach(Context context) {
@@ -63,16 +71,8 @@ public class CaptureFragment extends Fragment {
             logger.info("Image bytes array is null");
         }
 
-        rootLayout = view.findViewById(R.id.angles_layout);
-        ImageView angle1 = rootLayout.findViewById(R.id.angle1);
-        ImageView angle2 = rootLayout.findViewById(R.id.angle2);
-        ImageView angle3 = rootLayout.findViewById(R.id.angle3);
-        ImageView angle4 = rootLayout.findViewById(R.id.angle4);
-
-        angle1.setOnTouchListener(new ChoiceTouchListener(0));
-        angle2.setOnTouchListener(new ChoiceTouchListener(1));
-        angle3.setOnTouchListener(new ChoiceTouchListener(2));
-        angle4.setOnTouchListener(new ChoiceTouchListener(3));
+        angleSide = ((MainActivity) mFragmentActivity).getDpMeasure(mContext, angleSideInDp);
+        prepareAngles(view);
 
         Button tryAgainButton = view.findViewById(R.id.try_again_capture_button);
         tryAgainButton.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +94,7 @@ public class CaptureFragment extends Fragment {
     }
 
     private void decode() {
+        //decoding is happening here
         historyDB = new DatabaseHelper(mContext);
         String tmpResult = "http://www.pja.edu.pl/en/news/student-pjatk-zwyciezca-w-hackathonie-hackyeah";
         boolean inserted = historyDB.insertRecord(tmpResult);
@@ -114,6 +115,47 @@ public class CaptureFragment extends Fragment {
         return Bitmap.createBitmap(decodedBitmap, 0, 0, width, height, matrix, true);
     }
 
+    private void prepareAngles(View view) {
+        rootLayout = view.findViewById(R.id.angles_layout);
+        angle1 = rootLayout.findViewById(R.id.angle1);
+        angle2 = rootLayout.findViewById(R.id.angle2);
+        angle3 = rootLayout.findViewById(R.id.angle3);
+        angle4 = rootLayout.findViewById(R.id.angle4);
+
+        angle1.setOnTouchListener(new ChoiceTouchListener(0));
+        angle2.setOnTouchListener(new ChoiceTouchListener(1));
+        angle3.setOnTouchListener(new ChoiceTouchListener(2));
+        angle4.setOnTouchListener(new ChoiceTouchListener(3));
+
+        ViewTreeObserver vto = rootLayout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (!gotLayoutMeasures) {
+                    layoutWidth = rootLayout.getWidth();
+                    layoutHeight = rootLayout.getHeight();
+                    minLeft = 0 - angleSide / 2;
+                    minTop = 0 - angleSide / 2;
+                    maxLeft = layoutWidth - angleSide / 2;
+                    maxTop = layoutHeight - angleSide / 2;
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) angle1.getLayoutParams();
+                    layoutParams.setMargins(layoutWidth / 4 - angleSide / 2, layoutHeight / 4 - angleSide / 2, 0, 0);
+                    angle1.setLayoutParams(layoutParams);
+                    layoutParams = (RelativeLayout.LayoutParams) angle2.getLayoutParams();
+                    layoutParams.setMargins(layoutWidth / 4 * 3 - angleSide / 2, layoutHeight / 4 - angleSide / 2, 0, 0);
+                    angle2.setLayoutParams(layoutParams);
+                    layoutParams = (RelativeLayout.LayoutParams) angle3.getLayoutParams();
+                    layoutParams.setMargins(layoutWidth / 4 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
+                    angle3.setLayoutParams(layoutParams);
+                    layoutParams = (RelativeLayout.LayoutParams) angle4.getLayoutParams();
+                    layoutParams.setMargins(layoutWidth / 4 * 3 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
+                    angle4.setLayoutParams(layoutParams);
+                    gotLayoutMeasures = true;
+                }
+            }
+        });
+    }
+
     private final class ChoiceTouchListener implements View.OnTouchListener {
 
         private int angleId;
@@ -126,7 +168,6 @@ public class CaptureFragment extends Fragment {
             final int X = (int) event.getRawX();
             final int Y = (int) event.getRawY();
             logger.info("0) angleId: " + angleId);
-            logger.info("0) viewId: " + view.getId());
             logger.info("X: " + X);
             logger.info("Y: " + Y);
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -144,10 +185,25 @@ public class CaptureFragment extends Fragment {
                 case MotionEvent.ACTION_MOVE:
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
                             .getLayoutParams();
-                    layoutParams.leftMargin = X - xDelta[angleId];
-                    layoutParams.topMargin = Y - yDelta[angleId];
-                    layoutParams.rightMargin = -250;
-                    layoutParams.bottomMargin = -250;
+                    layoutParams.setMargins(X - xDelta[angleId], Y - yDelta[angleId], -250, -250);
+                    logger.info("leftMargin: " + layoutParams.leftMargin);
+                    logger.info("topMargin: " + layoutParams.topMargin);
+                    if (layoutParams.leftMargin < minLeft) {
+                        layoutParams.leftMargin = minLeft;
+                    }
+                    if (layoutParams.leftMargin > maxLeft) {
+                        layoutParams.leftMargin = maxLeft;
+                    }
+                    if (layoutParams.topMargin < minTop) {
+                        layoutParams.topMargin = minTop;
+                    }
+                    if (layoutParams.topMargin > maxTop) {
+                        layoutParams.topMargin = maxTop;
+                    }
+                    logger.info("minLeft: " + minLeft);
+                    logger.info("minTop: " + minTop);
+                    logger.info("maxLeft: " + maxLeft);
+                    logger.info("maxTop: " + maxTop);
                     view.setLayoutParams(layoutParams);
                     break;
             }

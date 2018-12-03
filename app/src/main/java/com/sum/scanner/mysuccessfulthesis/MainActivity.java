@@ -1,5 +1,6 @@
 package com.sum.scanner.mysuccessfulthesis;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -72,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
     public void changeToResultFragments(String result) {
         setResult(result);
         changeFragments(new ResultFragment(), getString(R.string.code_scanner));
+    }
+
+    public int getDpMeasure(Context context, int dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
 
     public byte[] getImageBytes() {
