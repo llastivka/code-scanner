@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import com.sum.scanner.mysuccessfulthesis.MainActivity;
 import com.sum.scanner.mysuccessfulthesis.database.DatabaseHelper;
 import com.sum.scanner.mysuccessfulthesis.R;
+import com.sum.scanner.mysuccessfulthesis.views.LineView;
 
 import java.util.logging.Logger;
 
@@ -40,10 +42,13 @@ public class CaptureFragment extends Fragment {
     private ImageView angle1, angle2, angle3, angle4;
     private int layoutWidth;
     private int layoutHeight;
-    private int angleSideInDp = 40;
+    private final int angleSideInDp = 40;
     private int angleSide;
     boolean gotLayoutMeasures = false;
     private int minLeft, minTop, maxLeft, maxTop;
+    private int[] xCoordinates = new int[4];
+    private int[] yCoordinates = new int[4];
+    private LineView[] lines = new LineView[4];
 
     @Override
     public void onAttach(Context context) {
@@ -86,6 +91,14 @@ public class CaptureFragment extends Fragment {
         anglesReadyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                logger.info("xCoordinates[0] : " + xCoordinates[0]);
+                logger.info("yCoordinates[0] : " + yCoordinates[0]);
+                logger.info("xCoordinates[1] : " + xCoordinates[1]);
+                logger.info("yCoordinates[1] : " + yCoordinates[1]);
+                logger.info("xCoordinates[2] : " + xCoordinates[2]);
+                logger.info("yCoordinates[2] : " + yCoordinates[2]);
+                logger.info("xCoordinates[3] : " + xCoordinates[3]);
+                logger.info("yCoordinates[3] : " + yCoordinates[3]);
                 decode();
             }
         });
@@ -115,7 +128,7 @@ public class CaptureFragment extends Fragment {
         return Bitmap.createBitmap(decodedBitmap, 0, 0, width, height, matrix, true);
     }
 
-    private void prepareAngles(View view) {
+    private void prepareAngles(final View view) {
         rootLayout = view.findViewById(R.id.angles_layout);
         angle1 = rootLayout.findViewById(R.id.angle1);
         angle2 = rootLayout.findViewById(R.id.angle2);
@@ -144,12 +157,46 @@ public class CaptureFragment extends Fragment {
                     layoutParams = (RelativeLayout.LayoutParams) angle2.getLayoutParams();
                     layoutParams.setMargins(layoutWidth / 4 * 3 - angleSide / 2, layoutHeight / 4 - angleSide / 2, 0, 0);
                     angle2.setLayoutParams(layoutParams);
-                    layoutParams = (RelativeLayout.LayoutParams) angle3.getLayoutParams();
-                    layoutParams.setMargins(layoutWidth / 4 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
-                    angle3.setLayoutParams(layoutParams);
                     layoutParams = (RelativeLayout.LayoutParams) angle4.getLayoutParams();
-                    layoutParams.setMargins(layoutWidth / 4 * 3 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
+                    layoutParams.setMargins(layoutWidth / 4 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
                     angle4.setLayoutParams(layoutParams);
+                    layoutParams = (RelativeLayout.LayoutParams) angle3.getLayoutParams();
+                    layoutParams.setMargins(layoutWidth / 4 * 3 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
+                    angle3.setLayoutParams(layoutParams);
+
+//                    xCoordinates[0] = (int) angle1.getX() + angle1.getWidth() / 2;
+//                    yCoordinates[0] =(int) angle1.getY() + angle1.getHeight() / 2;
+//                    xCoordinates[1] = (int) angle2.getX() + angle2.getWidth() / 2;
+//                    yCoordinates[1] =(int) angle2.getY() + angle2.getHeight() / 2;
+//                    xCoordinates[2] = (int) angle3.getX() + angle3.getWidth() / 2;
+//                    yCoordinates[2] =(int) angle3.getY() + angle3.getHeight() / 2;
+//                    xCoordinates[3] = (int) angle4.getX() + angle4.getWidth() / 2;
+//                    yCoordinates[3] =(int) angle4.getY() + angle4.getHeight() / 2;
+
+                    xCoordinates[0] = layoutWidth / 4;
+                    yCoordinates[0] = layoutHeight / 4;
+                    xCoordinates[1] = layoutWidth / 4 * 3;
+                    yCoordinates[1] = layoutHeight / 4;
+                    xCoordinates[2] = layoutWidth / 4 * 3;
+                    yCoordinates[2] = layoutHeight / 4 * 3;
+                    xCoordinates[3] = layoutWidth / 4;
+                    yCoordinates[3] = layoutHeight / 4 * 3;
+
+                    //setting initial position of lines;
+                    lines[0] = view.findViewById(R.id.line1);
+                    lines[1] = view.findViewById(R.id.line2);
+                    lines[2] = view.findViewById(R.id.line3);
+                    lines[3] = view.findViewById(R.id.line4);
+
+                    for (int i = 0; i < lines.length; i++) {
+                        int pointId1 = i;
+                        int pointId2 = i + 1 > lines.length - 1 ? 0 : i + 1;
+                        PointF pointA = new PointF(xCoordinates[pointId1], yCoordinates[pointId1]);
+                        PointF pointB = new PointF(xCoordinates[pointId2], yCoordinates[pointId2]);
+                        lines[i].setPointA(pointA);
+                        lines[i].setPointB(pointB);
+                        lines[i].draw();
+                    }
                     gotLayoutMeasures = true;
                 }
             }
@@ -175,6 +222,8 @@ public class CaptureFragment extends Fragment {
                     RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
                     xDelta[angleId] = X - lParams.leftMargin;
                     yDelta[angleId] = Y - lParams.topMargin;
+                    xCoordinates[angleId] = lParams.leftMargin;
+                    yCoordinates[angleId] = lParams.topMargin;
                     break;
                 case MotionEvent.ACTION_UP:
                     break;
@@ -186,8 +235,6 @@ public class CaptureFragment extends Fragment {
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
                             .getLayoutParams();
                     layoutParams.setMargins(X - xDelta[angleId], Y - yDelta[angleId], -250, -250);
-                    logger.info("leftMargin: " + layoutParams.leftMargin);
-                    logger.info("topMargin: " + layoutParams.topMargin);
                     if (layoutParams.leftMargin < minLeft) {
                         layoutParams.leftMargin = minLeft;
                     }
@@ -200,10 +247,16 @@ public class CaptureFragment extends Fragment {
                     if (layoutParams.topMargin > maxTop) {
                         layoutParams.topMargin = maxTop;
                     }
-                    logger.info("minLeft: " + minLeft);
-                    logger.info("minTop: " + minTop);
-                    logger.info("maxLeft: " + maxLeft);
-                    logger.info("maxTop: " + maxTop);
+
+                    int lineId1 = angleId;
+                    int lineId2 = angleId - 1 < 0 ? 3 : angleId - 1;
+                    //redrawing line
+                    PointF currentAnglePoint = new PointF(layoutParams.leftMargin + angleSide / 2, layoutParams.topMargin + angleSide / 2);
+                    lines[lineId1].setPointA(currentAnglePoint);
+                    lines[lineId2].setPointB(currentAnglePoint);
+                    lines[lineId1].draw();
+                    lines[lineId2].draw();
+
                     view.setLayoutParams(layoutParams);
                     break;
             }
