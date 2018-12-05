@@ -36,19 +36,23 @@ public class CaptureFragment extends Fragment {
     private Context mContext;
     private Activity mFragmentActivity;
 
-    private int xDelta[] = new int[4];
-    private int yDelta[] = new int[4];
     private ViewGroup rootLayout;
     private ImageView angle1, angle2, angle3, angle4;
+
+    private int xDelta[] = new int[4];
+    private int yDelta[] = new int[4];
+
     private int layoutWidth;
     private int layoutHeight;
     private final int angleSideInDp = 40;
     private int angleSide;
     boolean gotLayoutMeasures = false;
     private int minLeft, minTop, maxLeft, maxTop;
+
+    private LineView[] lines = new LineView[4];
     private int[] xCoordinates = new int[4];
     private int[] yCoordinates = new int[4];
-    private LineView[] lines = new LineView[4];
+
 
     @Override
     public void onAttach(Context context) {
@@ -91,6 +95,7 @@ public class CaptureFragment extends Fragment {
         anglesReadyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //here are the coordinates of the four angles to use for decoding later (for now they are just logged out)
                 logger.info("xCoordinates[0] : " + xCoordinates[0]);
                 logger.info("yCoordinates[0] : " + yCoordinates[0]);
                 logger.info("xCoordinates[1] : " + xCoordinates[1]);
@@ -164,15 +169,7 @@ public class CaptureFragment extends Fragment {
                     layoutParams.setMargins(layoutWidth / 4 * 3 - angleSide / 2, layoutHeight / 4 * 3 - angleSide / 2, 0, 0);
                     angle3.setLayoutParams(layoutParams);
 
-//                    xCoordinates[0] = (int) angle1.getX() + angle1.getWidth() / 2;
-//                    yCoordinates[0] =(int) angle1.getY() + angle1.getHeight() / 2;
-//                    xCoordinates[1] = (int) angle2.getX() + angle2.getWidth() / 2;
-//                    yCoordinates[1] =(int) angle2.getY() + angle2.getHeight() / 2;
-//                    xCoordinates[2] = (int) angle3.getX() + angle3.getWidth() / 2;
-//                    yCoordinates[2] =(int) angle3.getY() + angle3.getHeight() / 2;
-//                    xCoordinates[3] = (int) angle4.getX() + angle4.getWidth() / 2;
-//                    yCoordinates[3] =(int) angle4.getY() + angle4.getHeight() / 2;
-
+                    //setting initial position of lines (left margins basically)
                     xCoordinates[0] = layoutWidth / 4;
                     yCoordinates[0] = layoutHeight / 4;
                     xCoordinates[1] = layoutWidth / 4 * 3;
@@ -182,7 +179,6 @@ public class CaptureFragment extends Fragment {
                     xCoordinates[3] = layoutWidth / 4;
                     yCoordinates[3] = layoutHeight / 4 * 3;
 
-                    //setting initial position of lines;
                     lines[0] = view.findViewById(R.id.line1);
                     lines[1] = view.findViewById(R.id.line2);
                     lines[2] = view.findViewById(R.id.line3);
@@ -251,6 +247,8 @@ public class CaptureFragment extends Fragment {
                     int lineId1 = angleId;
                     int lineId2 = angleId - 1 < 0 ? 3 : angleId - 1;
                     //redrawing line
+                    xCoordinates[angleId] = layoutParams.leftMargin + angleSide / 2;
+                    yCoordinates[angleId] = layoutParams.topMargin + angleSide / 2;
                     PointF currentAnglePoint = new PointF(layoutParams.leftMargin + angleSide / 2, layoutParams.topMargin + angleSide / 2);
                     lines[lineId1].setPointA(currentAnglePoint);
                     lines[lineId2].setPointB(currentAnglePoint);
